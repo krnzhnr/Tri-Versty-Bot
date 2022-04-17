@@ -1,23 +1,22 @@
 from aiogram import Dispatcher, types
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           KeyboardButton, ReplyKeyboardMarkup,
-                           ReplyKeyboardRemove)
+from aiogram.types import (KeyboardButton, ReplyKeyboardMarkup)
 from create_bot import bot, dp
 from data_base import sqlite_db
+
+admin_button = KeyboardButton('/moderator')
 
 help_button = KeyboardButton('/Помощь')
 vk_button = KeyboardButton('/ВК')
 weather_button = KeyboardButton('/Погода')
 announcements_button = KeyboardButton('/Анонсы')
 reg_button = KeyboardButton('/Регистрация')
-start_kb = ReplyKeyboardMarkup(resize_keyboard=True)\
-    .add(help_button)
 help_kb = ReplyKeyboardMarkup(resize_keyboard=True)\
     .add(announcements_button)\
     .add(reg_button)\
     .add(weather_button)\
     .add(vk_button)\
-    .add(help_button)
+    .add(help_button)\
+    .add(admin_button)
 
 
 # Функция команды старт
@@ -37,6 +36,7 @@ async def announcements(message:types.Message):
     try:
         await sqlite_db.sql_read(message)
         await message.delete()
+        print(message.from_user.first_name + ' запросил анонсы')
     except:
         await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
         await message.delete()
@@ -47,6 +47,7 @@ async def registration(message:types.Message):
     try:
         await sqlite_db.sql_reg_read(message)
         # await bot.send_message(message.from_user.id, 'Для регистрации перейди по ссылке:\n')
+        print(message.from_user.first_name + ' запросил регистрацию')
     except:
         await message.answer('ты дурак сначала боту напиши')
 
@@ -57,11 +58,19 @@ async def help(message:types.Message):
     try:
         await bot.send_message(message.from_user.id, """
     Вот список моих команд:
-/Помощь - Помощь
-/ВК - Наша группа ВК
+
+/Анонсы - бот отправляет вам в ЛС все актуальные на данный момент анонсы
+
+/Регистрация - Бот присылает вам в ЛС ссылку на регистрацию в гонке
+
+/ВК - Наша группа ВК со всеми фотографиями
+
 /Погода - Текущая погода и прогноз
+
+/Помощь - Помощь по командам
 """, reply_markup=help_kb)
         await message.delete()
+        print(message.from_user.first_name + ' запросил помощь')
     except:
         await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
         await message.delete()
@@ -75,6 +84,7 @@ async def vk_group(message:types.Message):
 https://vk.com/kubok_tri_versty
 """, reply_markup=(help_kb))
         await message.delete()
+        print(message.from_user.first_name + ' запросил ВК')
     except:
         await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
         await message.delete()
@@ -85,15 +95,17 @@ https://vk.com/kubok_tri_versty
 async def weather(message:types.Message):
     await bot.send_message(message.from_user.id, 'Здесь должна быть погода', reply_markup=(help_kb))
     await message.delete()
+    print(message.from_user.first_name + ' запросил погоду')
 
 
 # Приветствие новеньких
 # @dp.message_handler(content_types=['new_chat_members'])
 async def user_joined(message:types.Message):
-    await message.answer(message.from_user.first_name + ', добро пожаловать в чат!\
+    await message.answer(message.from_user.first_name + ', добро пожаловать в чат!\n\
 Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\n\
-Чтобы увидеть список моих команд нажми кнопку /Помощь', reply_markup=(start_kb))
+Чтобы увидеть список моих команд нажми кнопку /Помощь', reply_markup=(help_kb))
+    print(message.from_user.first_name + ' вошел в чат')
 
 
 # Прощание с покинувшими чат
@@ -101,6 +113,7 @@ async def user_joined(message:types.Message):
 async def user_left(message:types.Message):
     await message.answer(message.from_user.first_name + ', мы будем по тебе скучать!')
     await bot.send_message(message.from_user.first_name + ', мы будем по тебе скучать!')
+    print(message.from_user.first_name + ' покинул чат')
 
 
 # Регистрация хендлеров для последующего импорта в tri_verstyBot.py

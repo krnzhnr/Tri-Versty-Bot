@@ -10,3 +10,5 @@ with open('E:/Python/VS Code/tri_verstyBot/cenz.txt', encoding='utf-8') as r:
 
 with open('cenz.json', 'w', encoding='utf-8') as e:
     json.dump(ar, e)
+    
+print('Успешно перезаписано')
