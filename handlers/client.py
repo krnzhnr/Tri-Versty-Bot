@@ -9,10 +9,8 @@ help_button = KeyboardButton('/Помощь')
 vk_button = KeyboardButton('/ВК')
 weather_button = KeyboardButton('/Погода')
 announcements_button = KeyboardButton('/Анонсы')
-reg_button = KeyboardButton('/Регистрация')
 help_kb = ReplyKeyboardMarkup(resize_keyboard=True)\
     .add(announcements_button)\
-    .add(reg_button)\
     .add(weather_button)\
     .add(vk_button)\
     .add(help_button)\
@@ -60,8 +58,6 @@ async def help(message:types.Message):
     Вот список моих команд:
 
 /Анонсы - бот отправляет вам в ЛС все актуальные на данный момент анонсы
-
-/Регистрация - Бот присылает вам в ЛС ссылку на регистрацию в гонке
 
 /ВК - Наша группа ВК со всеми фотографиями
 
@@ -112,7 +108,10 @@ async def user_joined(message:types.Message):
 # @dp.message_handler(content_types=['left_chat_member'])
 async def user_left(message:types.Message):
     await message.answer(message.from_user.first_name + ', мы будем по тебе скучать!')
-    await bot.send_message(message.from_user.first_name + ', мы будем по тебе скучать!')
+    try:
+        await bot.send_message(message.from_user.first_name + ', мы будем по тебе скучать!')
+    except:
+        print(message.from_user.first_name + ' не получил прощание в ЛС')
     print(message.from_user.first_name + ' покинул чат')
 
 
