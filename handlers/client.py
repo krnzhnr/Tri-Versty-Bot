@@ -25,29 +25,19 @@ async def start(message:types.Message):
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb, )
         await message.delete()
     except:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')           
         await message.delete()
 
 
-@dp.message_handler(commands=['Анонсы'])
+# @dp.message_handler(commands=['Анонсы'])
 async def announcements(message:types.Message):
     try:
         await sqlite_db.sql_read(message)
         await message.delete()
         print(message.from_user.first_name + ' запросил анонсы')
     except:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')           
         await message.delete()
-
-
-@dp.message_handler(commands=['Регистрация'])
-async def registration(message:types.Message):
-    try:
-        await sqlite_db.sql_reg_read(message)
-        # await bot.send_message(message.from_user.id, 'Для регистрации перейди по ссылке:\n')
-        print(message.from_user.first_name + ' запросил регистрацию')
-    except:
-        await message.answer('ты дурак сначала боту напиши')
 
 
 # Функция команды хелп
@@ -68,7 +58,7 @@ async def help(message:types.Message):
         await message.delete()
         print(message.from_user.first_name + ' запросил помощь')
     except:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')           
         await message.delete()
 
 
@@ -82,7 +72,7 @@ https://vk.com/kubok_tri_versty
         await message.delete()
         print(message.from_user.first_name + ' запросил ВК')
     except:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\nhttps://t.me/penis_mudilaBot')           
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')           
         await message.delete()
 
 
