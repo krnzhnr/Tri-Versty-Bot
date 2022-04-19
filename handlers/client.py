@@ -1,7 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.types import (KeyboardButton, ReplyKeyboardMarkup)
 from create_bot import bot, dp
-from data_base import sqlite_db
+from data_base import sqlite_announcements_db, sqlite_users_db
 
 admin_button = KeyboardButton('/moderator')
 
@@ -24,15 +24,20 @@ async def start(message:types.Message):
         await message.answer('Привет! Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb, )
         await message.delete()
+        userdata = {}
+        userdata = {'id': message.from_user.id, 'username': message.from_user.username}
+        print(userdata)
+        await sqlite_users_db.sql_add_user(userdata)
     except:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')           
-        await message.delete()
+        # await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')           
+        # await message.delete()
+        pass
 
 
 # @dp.message_handler(commands=['Анонсы'])
 async def announcements(message:types.Message):
     try:
-        await sqlite_db.sql_read(message)
+        await sqlite_announcements_db.sql_read(message)
         await message.delete()
         print(message.from_user.first_name + ' запросил анонсы')
     except:
@@ -103,6 +108,12 @@ async def user_left(message:types.Message):
     except:
         print(message.from_user.first_name + ' не получил прощание в ЛС')
     print(message.from_user.first_name + ' покинул чат')
+    
+
+# async def when_race(message:types.Message):
+#     if 'когда' and 'гонка' and '?' in message.text:
+#         await sqlite_announcements_db.sql_read(message)
+#         await bot.send_message(message.from_user.id, 'братуха, вот тебе анонсы ближайших гонок!')
 
 
 # Регистрация хендлеров для последующего импорта в tri_verstyBot.py
@@ -114,3 +125,4 @@ def register_handlers_client(dp:Dispatcher):
     dp.register_message_handler(weather, commands=['Погода'])
     dp.register_message_handler(user_joined, content_types=['new_chat_members'])
     dp.register_message_handler(user_left, content_types=['left_chat_member'])
+    # dp.register_message_handler(when_race)

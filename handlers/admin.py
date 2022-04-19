@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            KeyboardButton, ReplyKeyboardMarkup)
 from create_bot import bot
-from data_base import sqlite_db
+from data_base import sqlite_announcements_db
 
 upload_button = KeyboardButton('/Загрузить')
 cancel_button = KeyboardButton('/Отмена')
@@ -85,7 +85,7 @@ async def load_price(message:types.Message, state:FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = message.text
-        await sqlite_db.sql_add_command(state)
+        await sqlite_announcements_db.sql_add_command(state)
         await state.finish()
         print(message.from_user.first_name + ' добавил объект в анонсы')
 
@@ -96,7 +96,7 @@ async def load_price(message:types.Message, state:FSMContext):
 # @dp.message_handler(commands=['Удалить'])
 async def delete_item(message:types.Message):
     if message.from_user.id == ID:
-        read = await sqlite_db.sql_read2()
+        read = await sqlite_announcements_db.sql_read2()
         for ret in read:
             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nВзять с сообой: {ret[-1]} руб')
             await bot.send_message(message.from_user.id, text='^^^', reply_markup=InlineKeyboardMarkup().\
@@ -109,7 +109,7 @@ async def delete_item(message:types.Message):
 
 # @dp.callback_query_handler(lambda x: x.data and x.data.startswith('del '))
 async def del_callback_run(callback_query:types.CallbackQuery):
-    await sqlite_db.sql_delete_command(callback_query.data.replace('del ', ''))
+    await sqlite_announcements_db.sql_delete_command(callback_query.data.replace('del ', ''))
     await callback_query.answer(text=f'{callback_query.data.replace("del ", "")} удалена.', show_alert=True)
     
 
