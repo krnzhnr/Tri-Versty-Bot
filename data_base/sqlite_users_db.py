@@ -7,7 +7,7 @@ def sql_users_start():
     usercur = userbase.cursor()
     if userbase:
         print('User database connected')
-    userbase.execute('CREATE TABLE IF NOT EXISTS users(id, username)')
+    userbase.execute('CREATE TABLE IF NOT EXISTS users(id, username, first_name)')
     userbase.commit()
 
 
@@ -16,7 +16,7 @@ async def sql_add_user(userdata):
     user_id = userdata['id']
     if id_check(userdata) is True:
         print('Adding user with id %s to users table' % user_id)
-        usercur.execute('INSERT INTO users VALUES (?,?)', tuple(userdata.values()))
+        usercur.execute('INSERT INTO users VALUES (?,?,?)', tuple(userdata.values()))
         userbase.commit()
     else:
         print('User with id %s already exists' % user_id)
