@@ -1,6 +1,6 @@
 from aiogram import Dispatcher, types
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
-from create_bot import bot, dp
+from create_bot import bot
 from data_base import sqlite_announcements_db, sqlite_users_db
 
 admin_button = KeyboardButton('/moderator')
@@ -79,10 +79,10 @@ https://vk.com/kubok_tri_versty
 
 
 # @dp.message_handler(commands=['weather'])
-async def weather(message:types.Message):
-    await bot.send_message(message.from_user.id, 'Здесь должна быть погода', reply_markup=(help_kb))
-    await message.delete()
-    print(message.from_user.first_name + ' запросил погоду')
+# async def weather(message:types.Message):
+#     await bot.send_message(message.from_user.id, 'Здесь должна быть погода', reply_markup=(help_kb))
+#     await message.delete()
+#     print(message.from_user.first_name + ' запросил погоду')
 
 
 # @dp.message_handler(content_types=['new_chat_members'])
@@ -109,6 +109,6 @@ def register_handlers_client(dp:Dispatcher):
     dp.register_message_handler(announcements, commands=['Анонсы'])
     dp.register_message_handler(help, commands=['Помощь'])
     dp.register_message_handler(vk_group, commands=['ВК'])
-    dp.register_message_handler(weather, commands=['Погода'])
+    # dp.register_message_handler(weather, commands=['Погода'])
     dp.register_message_handler(user_joined, content_types=['new_chat_members'])
     dp.register_message_handler(user_left, content_types=['left_chat_member'])
