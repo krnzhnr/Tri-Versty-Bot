@@ -14,7 +14,7 @@ mgr = owm.weather_manager()
 class FSMWeather(StatesGroup):
     city = State()
 
-@dp.message_handler(commands=['Погода'], state=None)
+# @dp.message_handler(commands=['Погода'], state=None)
 async def weather(message: types.Message, state:FSMContext):
     try:
         await FSMWeather.city.set()
@@ -24,7 +24,7 @@ async def weather(message: types.Message, state:FSMContext):
         await state.finish()
 
 
-@dp.message_handler(content_types=['text'], state=FSMWeather.city)
+# @dp.message_handler(content_types=['text'], state=FSMWeather.city)
 async def city(message: types.Message, state:FSMContext):
     async with state.proxy() as data:
         data['city'] = message.text
@@ -85,3 +85,4 @@ async def city(message: types.Message, state:FSMContext):
 
 def register_handlers_weather(dp:Dispatcher):
     dp.register_message_handler(weather, commands=['Погода'])
+    dp.register_message_handler(city, content_types=['text'], state=FSMWeather.city)

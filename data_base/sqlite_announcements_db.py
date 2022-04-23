@@ -30,7 +30,7 @@ async def sql_add_command(state):
 async def sql_read(message):
     try:
         for ret in cur.execute('SELECT * FROM database').fetchall():
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n{ret[2]}\nВзять с сообой: {ret[-1]} руб.')
+            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n{ret[2]}\n{ret[-1]}')
         print('Успешное чтение ANNOUNCEMENTS-DB пользователем')
     except Exception as exc:
         await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')

@@ -4,14 +4,15 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            KeyboardButton, ReplyKeyboardMarkup)
-from create_bot import bot
-from data_base import sqlite_announcements_db
+from create_bot import bot, dp
+from data_base import sqlite_announcements_db, sqlite_users_db
 
 upload_button = KeyboardButton('/Загрузить')
 cancel_button = KeyboardButton('/Отмена')
 delete_button = KeyboardButton('/Удалить')
+users_button = KeyboardButton('/users')
 admin_kb = ReplyKeyboardMarkup(resize_keyboard=False).\
-    add(upload_button, delete_button).\
+    add(upload_button, delete_button, users_button).\
     add(cancel_button)
 
 ID = None
@@ -30,6 +31,19 @@ async def make_changes_command(message:types.Message):
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
     await message.delete()
     print(message.from_user.first_name + ' запустил админку')
+    
+    
+####################################################################    
+    
+
+@dp.message_handler(commands=['users'])
+async def read_users(message:types.Message):
+    user_list = await sqlite_users_db.read_users()
+    count = 0
+    for user in user_list:
+        await message.answer(f'{user[0]}')
+        count += 1
+    await message.answer(f'{count} пользователя')
 
 
 #################################################################### Добавление в ANNOUNCEMENTS-DB #################################################################################
@@ -98,7 +112,7 @@ async def delete_item(message:types.Message):
     if message.from_user.id == ID:
         read = await sqlite_announcements_db.sql_read2()
         for ret in read:
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nВзять с сообой: {ret[-1]} руб')
+            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nОписание: {ret[-1]}')
             await bot.send_message(message.from_user.id, text='^^^', reply_markup=InlineKeyboardMarkup().\
                 add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'del {ret[1]}')))
     print(message.from_user.first_name + ' запросил ANNOUNCEMENTS-DB для удаления')

@@ -5,6 +5,7 @@ from aiogram.utils import executor
 from create_bot import dp
 from data_base import sqlite_announcements_db, sqlite_users_db
 from handlers import admin, client, other
+from mailings import mailing
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,6 +17,7 @@ async def on_startup(__):
 
 client.register_handlers_client(dp)
 admin.register_handlers_admin(dp)
+mailing.register_handlers_mailing(dp)
 other.register_handlers_other(dp)
 
 

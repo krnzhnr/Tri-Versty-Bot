@@ -1,5 +1,5 @@
 import sqlite3 as sq
-from create_bot import dp
+from create_bot import dp, bot
 
 def sql_users_start():
     global userbase, usercur
@@ -29,6 +29,24 @@ def id_check(userdata):
         return True
     else:
         return False
+
+
+async def read_users():
+    return usercur.execute('SELECT first_name FROM users').fetchall()
+
+
+async def read_users_mailing_list():
+    count = 0
+    for user in usercur.execute('SELECT id, first_name FROM users').fetchall():
+        usr = {'id': user[0], 'first_name': user[1]}
+        try:
+            await bot.send_message(f'{usr["id"]}', f'Здарова {usr["first_name"]}, я тут немного рассылками балуюсь.\n\
+Ты не обижайся и жди сообщений в будущем.\nЕсли не хочешь, чтобы я тебе писал, скажи об этом в чат: https://t.me/+8xKEbnzpZFRjY2Qy')
+            print(f'{usr["first_name"]}' + ' получил сообщение')
+            count += 1
+        except Exception as exc:
+            print(exc, f'{usr["first_name"]}')
+    print(count)
         
 
     
