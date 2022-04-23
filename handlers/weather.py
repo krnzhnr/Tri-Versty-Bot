@@ -15,15 +15,19 @@ class FSMWeather(StatesGroup):
     city = State()
 
 @dp.message_handler(commands=['Погода'], state=None)
-async def weather(message: types.Message):
-    await FSMWeather.city.set()
-    await message.reply('Город?')
+async def weather(message: types.Message, state:FSMContext):
+    try:
+        await FSMWeather.city.set()
+        await message.reply('Город?')
+    except Exception as exc:
+        print(exc)
+        await state.finish()
+
 
 @dp.message_handler(content_types=['text'], state=FSMWeather.city)
-async def city(message: types.Message, state: FSMContext):
+async def city(message: types.Message, state:FSMContext):
     async with state.proxy() as data:
         data['city'] = message.text
-    
     try:
         observation = mgr.weather_at_place(str(message.text))
         w = observation.weather
@@ -68,8 +72,12 @@ async def city(message: types.Message, state: FSMContext):
         # await message.answer (w.heat_index)              # None
         # await message.answer (w.clouds)                  # 75
         await message.answer(str(a) + "\n" + c + "\n" + str(d))
+        print(message.from_user.first_name + ' запросил погоду в ' + data['city'])
     except:
-        await message.reply("Ты что мне тут вводишь?")
+        await message.reply("Ты что мне тут вводишь?\nЧтобы узнать погоду нажми кнопку погоды и введи название города.")
+        print(message.from_user.first_name + ' попробовал запросить погоду в ' + data['city'] + ', но не смог')
+        await state.finish()
+
         # answer = forecast.will_be_clear_at(timestamps.tomorrow())
 
     # await message.reply(data['city'])

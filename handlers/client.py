@@ -4,6 +4,7 @@ from create_bot import bot
 from data_base import sqlite_announcements_db, sqlite_users_db
 
 admin_button = KeyboardButton('/moderator')
+start_button = KeyboardButton('/start')
 
 help_button = KeyboardButton('/Помощь')
 vk_button = KeyboardButton('/ВК')
@@ -14,7 +15,8 @@ help_kb = ReplyKeyboardMarkup(resize_keyboard=True)\
     .add(weather_button)\
     .add(vk_button)\
     .add(help_button)\
-    .add(admin_button)
+    .add(admin_button)\
+    .add(start_button)
 
 
 # @dp.message_handler(commands=['start'])
@@ -28,9 +30,8 @@ async def start(message:types.Message):
         print(userdata)
         await sqlite_users_db.sql_add_user(userdata)
     except:
-        # await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
-        # await message.delete()
-        pass
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
+        await message.delete()
 
 
 # @dp.message_handler(commands=['Анонсы'])

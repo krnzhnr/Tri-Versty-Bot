@@ -33,6 +33,7 @@ async def sql_read(message):
             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n{ret[2]}\nВзять с сообой: {ret[-1]} руб.')
         print('Успешное чтение ANNOUNCEMENTS-DB пользователем')
     except Exception as exc:
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
         print('ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено')
         print(exc)
 
