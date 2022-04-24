@@ -22,7 +22,7 @@ help_kb = ReplyKeyboardMarkup(resize_keyboard=True)\
 # @dp.message_handler(commands=['start'])
 async def start(message:types.Message):
     try:
-        await message.answer('Привет! Я буду следить за порядком в чате Три Версты \
+        await bot.send_message(message.from_user.id, 'Привет! Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb,)
         await message.delete()
         userdata = {}
@@ -30,7 +30,7 @@ async def start(message:types.Message):
         print(userdata)
         await sqlite_users_db.sql_add_user(userdata)
     except:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
+        await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@penis_mudilaBot')
         await message.delete()
 
 

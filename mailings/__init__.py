@@ -1,1 +1,0 @@
-from mailings import mailing

@@ -31,12 +31,33 @@ async def make_changes_command(message:types.Message):
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
     await message.delete()
     print(message.from_user.first_name + ' запустил админку')
-    
-    
-####################################################################    
+
+
+############################################################################# РАССЫЛКА #############################################################################################
+
+
+# @dp.message_handler(commands=['mailing'])
+async def mailing(message:types.Message):
+    if message.from_user.id == ID:
+        users = await sqlite_users_db.read_users_mailing_list()
+        successful = 0
+        failed = 0
+        for user in users:
+            usr = {'id': user[0], 'first_name': user[1]}
+            try:
+                await bot.send_message(f'{usr["id"]}', f'Здарова {usr["first_name"]}, ты знал, что {usr["first_name"]} лох?')
+                await message.answer(f'{usr["first_name"]}' + ' получил сообщение')
+                successful += 1
+            except Exception as exc:
+                await message.answer(f'{exc}' + f' {usr["first_name"]}')
+                failed += 1
+        await message.answer('Успешно отправлено: ' + str(successful) + '\nНе отправлено: ' + str(failed))
+
+
+######################################################################## Список пользователей ######################################################################################
     
 
-@dp.message_handler(commands=['users'])
+# @dp.message_handler(commands=['users'])
 async def read_users(message:types.Message):
     user_list = await sqlite_users_db.read_users()
     count = 0
@@ -132,6 +153,8 @@ async def del_callback_run(callback_query:types.CallbackQuery):
 
 def register_handlers_admin(dp:Dispatcher):
     dp.register_message_handler(make_changes_command, commands=['moderator'], is_chat_admin = True)
+    dp.register_message_handler(mailing, commands=['mailing'])
+    dp.register_message_handler(read_users, commands=['users'])
     dp.register_message_handler(cm_start, commands=['Загрузить'], state=None)
     dp.register_message_handler(cancel_handler, state="*", commands=['Отмена'])
     dp.register_message_handler(cancel_handler, Text(equals = 'Отмена', ignore_case = True), state = "*")
