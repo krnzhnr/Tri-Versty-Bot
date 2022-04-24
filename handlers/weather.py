@@ -14,6 +14,7 @@ mgr = owm.weather_manager()
 class FSMWeather(StatesGroup):
     city = State()
 
+
 # @dp.message_handler(commands=['Погода'], state=None)
 async def weather(message: types.Message, state:FSMContext):
     try:
@@ -33,7 +34,10 @@ async def city(message: types.Message, state:FSMContext):
         w = observation.weather
         a = w.detailed_status
         # b = w.wind() 
-        c = ("Температура на градуснике: " + "\n" + str(w.temperature('celsius')['temp']) + "°С" + "\n\nПо ощущению: " + str(w.temperature('celsius')['feels_like']) + "°С")
+        c = ("Температура на градуснике: " 
+             + "\n"  + str(w.temperature('celsius')['temp'])  + "°С" 
+             + "\n\nПо ощущению: " 
+             + '\n' + str(w.temperature('celsius')['feels_like']) + "°С")
         d = (w.temperature('celsius')['feels_like'])
         # e = w.rain
         # f = w.clouds
@@ -59,29 +63,33 @@ async def city(message: types.Message, state:FSMContext):
             d = ("Пощади свои суставы, время утепляться")
         elif d < 5 and \
             d >= 0:
-            d = ("Не вздумай ехать в семейниках, бубенцы звинеть будут. Одевайся тепло и тёплые перчатки не забудь")
+            d = ("Не вздумай ехать в семейниках, бубенцы звинеть будут. \
+                Одевайся тепло и тёплые перчатки не забудь")
         elif d < 0 and \
             d >= -10:
-            d = ("Ходят слухи, что в такую погоду не катают, но не мы. Тёплые одёжки и перчатки ждут. Про голову и ноги не забывай, голова в тепле и бахилы на ногах (если ты в контактах катаешь)")
+            d = ("Ходят слухи, что в такую погоду не катают, но не мы. \
+                Тёплые одёжки и перчатки ждут. Про голову и ноги не забывай, \
+                    голова в тепле и бахилы на ногах (если ты в контактах катаешь)")
         elif d < -10:
-            d = ("Холодно, противно, местами снег, время катнуть. ТОЛЬКО ТЁПЛЫЕ ОДЁЖКИ! Коня потом не забудь почистить, после покатухи")
+            d = ("Холодно, противно, местами снег, время катнуть. \
+                ТОЛЬКО ТЁПЛЫЕ ОДЁЖКИ! Коня потом не забудь почистить, после покатухи")
         else:
             d = ("Температура шикарная, катай хоть в том, в чём мать родила")
-
         # await message.answer (w.rain)                    # {}
         # await message.answer (w.heat_index)              # None
         # await message.answer (w.clouds)                  # 75
-        await message.answer(str(a) + "\n" + c + "\n" + str(d))
+        await message.answer(str(a.upper()) + "\n\n" + c + "\n\n" + str(d))
         print(message.from_user.first_name + ' запросил погоду в ' + data['city'])
     except:
-        await message.reply("Ты что мне тут вводишь?\nЧтобы узнать погоду нажми кнопку погоды и введи название города.")
+        await message.reply(
+            "Ты что мне тут вводишь?\nЧтобы узнать погоду нажми кнопку погоды и введи название города."
+            )
         print(message.from_user.first_name + ' попробовал запросить погоду в ' + data['city'] + ', но не смог')
         await state.finish()
-
         # answer = forecast.will_be_clear_at(timestamps.tomorrow())
-
     # await message.reply(data['city'])
     await state.finish()
+
 
 def register_handlers_weather(dp:Dispatcher):
     dp.register_message_handler(weather, commands=['Погода'])

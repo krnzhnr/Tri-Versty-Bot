@@ -10,12 +10,17 @@ from data_base import sqlite_announcements_db, sqlite_users_db
 upload_button = KeyboardButton('/Загрузить')
 cancel_button = KeyboardButton('/Отмена')
 delete_button = KeyboardButton('/Удалить')
+mailing_button = KeyboardButton('/Рассылка')
 users_button = KeyboardButton('/users')
 admin_kb = ReplyKeyboardMarkup(resize_keyboard=False).\
-    add(upload_button, delete_button, users_button).\
+    add(upload_button, delete_button).\
+    add(users_button, mailing_button).\
     add(cancel_button)
 
 ID = None
+
+class FSMMailing(StatesGroup):
+    mail = State()
 
 class FSMAdmin(StatesGroup):
     photo = State()
@@ -33,25 +38,50 @@ async def make_changes_command(message:types.Message):
     print(message.from_user.first_name + ' запустил админку')
 
 
+async def cancel_handler(message:types.Message, state:FSMContext):
+    if message.from_user.id == ID:
+        current_state = await state.get_state()
+        print(current_state)
+        if current_state is None:
+            return
+        await state.finish()
+        await message.reply('ОК')
+        print(message.from_user.first_name + ' отменил действие')
+
+
 ############################################################################# РАССЫЛКА #############################################################################################
 
 
-# @dp.message_handler(commands=['mailing'])
-async def mailing(message:types.Message):
+# @dp.message_handler(commands=['Рассылка'], state=None)
+async def setmail(message:types.Message):
     if message.from_user.id == ID:
-        users = await sqlite_users_db.read_users_mailing_list()
-        successful = 0
-        failed = 0
-        for user in users:
-            usr = {'id': user[0], 'first_name': user[1]}
-            try:
-                await bot.send_message(f'{usr["id"]}', f'Здарова {usr["first_name"]}, ты знал, что {usr["first_name"]} лох?')
-                await message.answer(f'{usr["first_name"]}' + ' получил сообщение')
-                successful += 1
-            except Exception as exc:
-                await message.answer(f'{exc}' + f' {usr["first_name"]}')
-                failed += 1
-        await message.answer('Успешно отправлено: ' + str(successful) + '\nНе отправлено: ' + str(failed))
+        await FSMMailing.mail.set()
+        await message.reply('Напиши мне то, что нужно разослать')
+        print(message.from_user.first_name + ' начал формирование рассылки')
+
+
+# @dp.message_handler(state=FSMMailing.mail)
+async def mail(message:types.Message, state=FSMContext):
+    if message.from_user.id == ID:
+        async with state.proxy() as mail:
+            mail['mail_text'] = message.text
+            users = await sqlite_users_db.read_users_mailing_list()
+            successful = 0
+            failed = 0
+            for user in users:
+                usr = {'id': user[0], 'first_name': user[1]}
+                try:
+                    await bot.send_message(f'{usr["id"]}', 
+                                           f'{mail["mail_text"]}')
+                    await message.answer(f'{usr["first_name"]}' + ' получил сообщение')
+                    successful += 1
+                except Exception as exc:
+                    await message.answer(f'{exc} ' + 
+                                         f'{usr["first_name"]}')
+                    failed += 1
+            await message.answer('Успешно отправлено: ' + str(successful) + 
+                                 '\nНе отправлено: ' + str(failed))
+            await state.finish()
 
 
 ######################################################################## Список пользователей ######################################################################################
@@ -76,16 +106,6 @@ async def cm_start(message:types.Message):
         await FSMAdmin.photo.set()
         await message.reply('Загрузи фото')
         print(message.from_user.first_name + ' начал добавление в ANNOUNCEMENTS-DB')
-
-
-async def cancel_handler(message:types.Message, state:FSMContext):
-    if message.from_user.id == ID:
-        current_state = await state.get_state()
-        if current_state is None:
-            return
-        await state.finish()
-        await message.reply('ОК')
-        print(message.from_user.first_name + ' отменил добавление в ANNOUNCEMENTS-DB')
 
 
 # @dp.message_handler(content_types=['photo'],state=FSMAdmin.photo)
@@ -133,7 +153,11 @@ async def delete_item(message:types.Message):
     if message.from_user.id == ID:
         read = await sqlite_announcements_db.sql_read2()
         for ret in read:
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nОписание: {ret[-1]}')
+            await bot.send_photo(message.from_user.id, 
+                                 ret[0], 
+                                 f'{ret[1]}\
+                                \nОписание: {ret[2]}\
+                                \nОписание: {ret[-1]}')
             await bot.send_message(message.from_user.id, text='^^^', reply_markup=InlineKeyboardMarkup().\
                 add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'del {ret[1]}')))
     print(message.from_user.first_name + ' запросил ANNOUNCEMENTS-DB для удаления')
@@ -153,14 +177,15 @@ async def del_callback_run(callback_query:types.CallbackQuery):
 
 def register_handlers_admin(dp:Dispatcher):
     dp.register_message_handler(make_changes_command, commands=['moderator'], is_chat_admin = True)
-    dp.register_message_handler(mailing, commands=['mailing'])
-    dp.register_message_handler(read_users, commands=['users'])
-    dp.register_message_handler(cm_start, commands=['Загрузить'], state=None)
     dp.register_message_handler(cancel_handler, state="*", commands=['Отмена'])
     dp.register_message_handler(cancel_handler, Text(equals = 'Отмена', ignore_case = True), state = "*")
+    dp.register_message_handler(setmail, commands=['Рассылка'], state=None)
+    dp.register_message_handler(mail, state=FSMMailing.mail)
+    dp.register_message_handler(read_users, commands=['users'])
+    dp.register_message_handler(cm_start, commands=['Загрузить'], state=None)
     dp.register_message_handler(load_photo, content_types=['photo'], state=FSMAdmin.photo)
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_description, state=FSMAdmin.description)
     dp.register_message_handler(load_price, state=FSMAdmin.price)
-    dp.register_message_handler(delete_item, commands='Удалить')
+    dp.register_message_handler(delete_item, commands=['Удалить'])
     dp.register_callback_query_handler(del_callback_run, lambda x: x.data and x.data.startswith('del '))

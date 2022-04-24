@@ -10,19 +10,15 @@ help_button = KeyboardButton('/Помощь')
 vk_button = KeyboardButton('/ВК')
 weather_button = KeyboardButton('/Погода')
 announcements_button = KeyboardButton('/Анонсы')
-help_kb = ReplyKeyboardMarkup(resize_keyboard=True)\
-    .add(announcements_button)\
-    .add(weather_button)\
-    .add(vk_button)\
-    .add(help_button)\
-    .add(admin_button)\
-    .add(start_button)
+help_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
+    row(announcements_button, weather_button, vk_button).\
+    row(help_button, admin_button, start_button)
 
 
 # @dp.message_handler(commands=['start'])
 async def start(message:types.Message):
     try:
-        await bot.send_message(message.from_user.id, 'Привет! Я буду следить за порядком в чате Три Версты \
+        await message.answer(message.from_user.id, 'Привет! Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb,)
         await message.delete()
         userdata = {}
@@ -30,7 +26,7 @@ async def start(message:types.Message):
         print(userdata)
         await sqlite_users_db.sql_add_user(userdata)
     except:
-        await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@penis_mudilaBot')
+        await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@penis_mudilaBot', reply_markup=help_kb)
         await message.delete()
 
 
@@ -69,7 +65,7 @@ async def help(message:types.Message):
 # @dp.message_handler(commands=['vk'])
 async def vk_group(message:types.Message):
     try:
-        await bot.send_message(message.from_user.id, """Наша группа ВК:
+        await bot.send_message(message.from_user.id, """Наша группа ВК с фоточками:
 https://vk.com/kubok_tri_versty
 """, reply_markup=(help_kb))
         await message.delete()
@@ -84,7 +80,7 @@ async def user_joined(message:types.Message):
     await message.answer(message.from_user.first_name + ', добро пожаловать в чат!\n\
 Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\n\
-Чтобы увидеть список моих команд нажми кнопку /Помощь', reply_markup=(help_kb))
+Чтобы увидеть список моих команд нажми кнопку /Помощь', reply_markup=help_kb)
     print(message.from_user.first_name + ' вошел в чат')
 
 

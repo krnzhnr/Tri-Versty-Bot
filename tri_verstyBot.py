@@ -4,7 +4,7 @@ from aiogram.utils import executor
 
 from create_bot import dp
 from data_base import sqlite_announcements_db, sqlite_users_db
-from handlers import admin, client, other
+from handlers import admin, client, other, weather
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,6 +16,7 @@ async def on_startup(__):
 
 client.register_handlers_client(dp)
 admin.register_handlers_admin(dp)
+weather.register_handlers_weather(dp)
 other.register_handlers_other(dp)
 
 
