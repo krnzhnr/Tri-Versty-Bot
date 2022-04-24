@@ -22,7 +22,9 @@ async def start(message:types.Message):
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb,)
         await message.delete()
         userdata = {}
-        userdata = {'id': message.from_user.id, 'username': message.from_user.username, 'first_name': message.from_user.first_name}
+        userdata = {'id': message.from_user.id, 
+                    'username': message.from_user.username, 
+                    'first_name': message.from_user.first_name}
         print(userdata)
         await sqlite_users_db.sql_add_user(userdata)
     except:
