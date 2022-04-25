@@ -30,18 +30,18 @@ class FSMAdmin(StatesGroup):
 
 
 # @dp.message_handler(commands=['moderator'], is_chat_admin = True)
-async def make_changes_command(message:types.Message):
+async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
-    await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
+    await bot.send_message(message.from_user.id, ' Что хозяин надо???', reply_markup=admin_kb)
     await message.delete()
     print(message.from_user.first_name + ' запустил админку')
 
 
-async def cancel_handler(message:types.Message, state:FSMContext):
+async def cancel_handler(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         current_state = await state.get_state()
-        print(current_state)
+        # print(current_state)
         if current_state is None:
             return
         await state.finish()
@@ -53,7 +53,7 @@ async def cancel_handler(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(commands=['Рассылка'], state=None)
-async def setmail(message:types.Message):
+async def setmail(message: types.Message):
     if message.from_user.id == ID:
         await FSMMailing.mail.set()
         await message.reply('Напиши мне то, что нужно разослать')
@@ -61,7 +61,7 @@ async def setmail(message:types.Message):
 
 
 # @dp.message_handler(state=FSMMailing.mail)
-async def mail(message:types.Message, state=FSMContext):
+async def mail(message: types.Message, state=FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as mail:
             mail['mail_text'] = message.text
@@ -70,6 +70,7 @@ async def mail(message:types.Message, state=FSMContext):
             failed = 0
             for user in users:
                 usr = {'id': user[0], 'first_name': user[1]}
+                print(usr)
                 try:
                     await bot.send_message(f'{usr["id"]}', 
                                            f'{mail["mail_text"]}')
