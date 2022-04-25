@@ -16,35 +16,35 @@ help_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
 
 
 # @dp.message_handler(commands=['start'])
-async def start(message:types.Message):
+async def start(message: types.Message):
     try:
-        await message.answer(message.from_user.id, 'Привет! Я буду следить за порядком в чате Три Версты \
+        await message.answer('Привет! Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb,)
         await message.delete()
         userdata = {}
-        userdata = {'id': message.from_user.id, 
-                    'username': message.from_user.username, 
-                    'first_name': message.from_user.first_name}
+        userdata = {'id':message.from_user.id, 'username':message.from_user.username, 'first_name':message.from_user.first_name}
         print(userdata)
         await sqlite_users_db.sql_add_user(userdata)
-    except:
+    except Exception as exc:
         await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@penis_mudilaBot', reply_markup=help_kb)
         await message.delete()
+        print(exc)
 
 
 # @dp.message_handler(commands=['Анонсы'])
-async def announcements(message:types.Message):
+async def announcements(message: types.Message):
     try:
         await sqlite_announcements_db.sql_read(message)
         await message.delete()
         print(message.from_user.first_name + ' запросил анонсы')
-    except:
+    except Exception as exc:
         await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
         await message.delete()
+        print(exc)
 
 
 # @dp.message_handler(commands=['help'])
-async def help(message:types.Message):
+async def help(message: types.Message):
     try:
         await bot.send_message(message.from_user.id, """
     Вот список моих команд:
@@ -59,26 +59,28 @@ async def help(message:types.Message):
 """, reply_markup=help_kb)
         await message.delete()
         print(message.from_user.first_name + ' запросил помощь')
-    except:
+    except Exception as exc:
         await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
         await message.delete()
+        print(exc)
 
 
 # @dp.message_handler(commands=['vk'])
-async def vk_group(message:types.Message):
+async def vk_group(message: types.Message):
     try:
         await bot.send_message(message.from_user.id, """Наша группа ВК с фоточками:
 https://vk.com/kubok_tri_versty
 """, reply_markup=(help_kb))
         await message.delete()
         print(message.from_user.first_name + ' запросил ВК')
-    except:
+    except Exception as exc:
         await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
         await message.delete()
+        print(exc)
 
 
 # @dp.message_handler(content_types=['new_chat_members'])
-async def user_joined(message:types.Message):
+async def user_joined(message: types.Message):
     await message.answer(message.from_user.first_name + ', добро пожаловать в чат!\n\
 Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\n\
@@ -87,7 +89,7 @@ async def user_joined(message:types.Message):
 
 
 # @dp.message_handler(content_types=['left_chat_member'])
-async def user_left(message:types.Message):
+async def user_left(message: types.Message):
     await message.answer(message.from_user.first_name + ', мы будем по тебе скучать!')
     try:
         await bot.send_message(message.from_user.first_name + ', мы будем по тебе скучать!')

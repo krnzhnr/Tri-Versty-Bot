@@ -30,7 +30,7 @@ class FSMAdmin(StatesGroup):
 
 
 # @dp.message_handler(commands=['moderator'], is_chat_admin = True)
-async def make_changes_command(message:types.Message):
+async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
@@ -38,7 +38,7 @@ async def make_changes_command(message:types.Message):
     print(message.from_user.first_name + ' запустил админку')
 
 
-async def cancel_handler(message:types.Message, state:FSMContext):
+async def cancel_handler(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         current_state = await state.get_state()
         print(current_state)
@@ -53,7 +53,7 @@ async def cancel_handler(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(commands=['Рассылка'], state=None)
-async def setmail(message:types.Message):
+async def setmail(message: types.Message):
     if message.from_user.id == ID:
         await FSMMailing.mail.set()
         await message.reply('Напиши мне то, что нужно разослать')
@@ -61,7 +61,7 @@ async def setmail(message:types.Message):
 
 
 # @dp.message_handler(state=FSMMailing.mail)
-async def mail(message:types.Message, state=FSMContext):
+async def mail(message: types.Message, state=FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as mail:
             mail['mail_text'] = message.text
@@ -88,7 +88,7 @@ async def mail(message:types.Message, state=FSMContext):
     
 
 # @dp.message_handler(commands=['users'])
-async def read_users(message:types.Message):
+async def read_users(message: types.Message):
     user_list = await sqlite_users_db.read_users()
     count = 0
     for user in user_list:
@@ -101,7 +101,7 @@ async def read_users(message:types.Message):
 
 
 # @dp.message_handler(commands='Загрузить', state=None)
-async def cm_start(message:types.Message):
+async def cm_start(message: types.Message):
     if message.from_user.id == ID:
         await FSMAdmin.photo.set()
         await message.reply('Загрузи фото')
@@ -109,7 +109,7 @@ async def cm_start(message:types.Message):
 
 
 # @dp.message_handler(content_types=['photo'],state=FSMAdmin.photo)
-async def load_photo(message:types.Message, state:FSMContext):
+async def load_photo(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['photo'] = message.photo[0].file_id
@@ -118,7 +118,7 @@ async def load_photo(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(state=FSMAdmin.name)
-async def load_name(message:types.Message, state:FSMContext):
+async def load_name(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['name'] = message.text
@@ -127,16 +127,16 @@ async def load_name(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(state=FSMAdmin.description)
-async def load_description(message:types.Message, state:FSMContext):
+async def load_description(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['description'] = message.text
         await FSMAdmin.next()
-        await message.reply('Теперь укажи сколько взять с собой')
+        await message.reply('Теперь введи что-нибудь еще')
 
 
 # @dp.message_handler(state=FSMAdmin.price)
-async def load_price(message:types.Message, state:FSMContext):
+async def load_price(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = message.text
@@ -149,7 +149,7 @@ async def load_price(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(commands=['Удалить'])
-async def delete_item(message:types.Message):
+async def delete_item(message: types.Message):
     if message.from_user.id == ID:
         read = await sqlite_announcements_db.sql_read2()
         for ret in read:
@@ -167,7 +167,7 @@ async def delete_item(message:types.Message):
 
 
 # @dp.callback_query_handler(lambda x: x.data and x.data.startswith('del '))
-async def del_callback_run(callback_query:types.CallbackQuery):
+async def del_callback_run(callback_query: types.CallbackQuery):
     await sqlite_announcements_db.sql_delete_command(callback_query.data.replace('del ', ''))
     await callback_query.answer(text=f'{callback_query.data.replace("del ", "")} удалена.', show_alert=True)
     
