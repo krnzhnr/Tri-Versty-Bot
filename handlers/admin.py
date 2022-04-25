@@ -41,7 +41,7 @@ async def make_changes_command(message: types.Message):
 async def cancel_handler(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         current_state = await state.get_state()
-        print(current_state)
+        # print(current_state)
         if current_state is None:
             return
         await state.finish()
@@ -70,6 +70,7 @@ async def mail(message: types.Message, state=FSMContext):
             failed = 0
             for user in users:
                 usr = {'id': user[0], 'first_name': user[1]}
+                print(usr)
                 try:
                     await bot.send_message(f'{usr["id"]}', 
                                            f'{mail["mail_text"]}')
