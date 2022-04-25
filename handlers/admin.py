@@ -33,7 +33,7 @@ class FSMAdmin(StatesGroup):
 async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
-    await bot.send_message(message.from_user.id, ' Что хозяин надо???', reply_markup=admin_kb)
+    await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
     await message.delete()
     print(message.from_user.first_name + ' запустил админку')
 
@@ -89,7 +89,7 @@ async def mail(message: types.Message, state=FSMContext):
     
 
 # @dp.message_handler(commands=['users'])
-async def read_users(message:types.Message):
+async def read_users(message: types.Message):
     user_list = await sqlite_users_db.read_users()
     count = 0
     for user in user_list:
@@ -102,7 +102,7 @@ async def read_users(message:types.Message):
 
 
 # @dp.message_handler(commands='Загрузить', state=None)
-async def cm_start(message:types.Message):
+async def cm_start(message: types.Message):
     if message.from_user.id == ID:
         await FSMAdmin.photo.set()
         await message.reply('Загрузи фото')
@@ -110,7 +110,7 @@ async def cm_start(message:types.Message):
 
 
 # @dp.message_handler(content_types=['photo'],state=FSMAdmin.photo)
-async def load_photo(message:types.Message, state:FSMContext):
+async def load_photo(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['photo'] = message.photo[0].file_id
@@ -119,7 +119,7 @@ async def load_photo(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(state=FSMAdmin.name)
-async def load_name(message:types.Message, state:FSMContext):
+async def load_name(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['name'] = message.text
@@ -128,7 +128,7 @@ async def load_name(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(state=FSMAdmin.description)
-async def load_description(message:types.Message, state:FSMContext):
+async def load_description(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['description'] = message.text
@@ -137,7 +137,7 @@ async def load_description(message:types.Message, state:FSMContext):
 
 
 # @dp.message_handler(state=FSMAdmin.price)
-async def load_price(message:types.Message, state:FSMContext):
+async def load_price(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = message.text
