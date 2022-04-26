@@ -70,7 +70,6 @@ async def mail(message: types.Message, state=FSMContext):
             failed = 0
             for user in users:
                 usr = {'id': user[0], 'first_name': user[1]}
-                print(usr)
                 try:
                     await bot.send_message(f'{usr["id"]}', 
                                            f'{mail["mail_text"]}')
@@ -115,7 +114,7 @@ async def load_photo(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['photo'] = message.photo[0].file_id
         await FSMAdmin.next()
-        await message.reply('Теперь введи название')
+        await message.reply('Теперь введи название, оно должно быть не длиннее 30 символов')
 
 
 # @dp.message_handler(state=FSMAdmin.name)

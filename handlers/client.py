@@ -12,14 +12,14 @@ weather_button = KeyboardButton('/Погода')
 announcements_button = KeyboardButton('/Анонсы')
 help_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
     row(announcements_button, weather_button, vk_button).\
-    row(help_button, admin_button, start_button)
+    row(help_button)
 
 
 # @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     try:
         await message.answer('Привет! Я буду следить за порядком в чате Три Версты \
-и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb,)
+и предоставлять полезную информацию! Напиши мне в ЛС.\nДля управления ботом используй кнопки.', reply_markup=help_kb)
         await message.delete()
         userdata = {}
         userdata = {'id':message.from_user.id, 'username':message.from_user.username, 'first_name':message.from_user.first_name}

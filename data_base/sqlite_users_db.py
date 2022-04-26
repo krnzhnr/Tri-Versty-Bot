@@ -9,7 +9,7 @@ def sql_users_start():
     usercur = userbase.cursor()
     if userbase:
         print('User database connected')
-    userbase.execute('CREATE TABLE IF NOT EXISTS users(id, username, first_name)')
+    userbase.execute('CREATE TABLE IF NOT EXISTS users(id PRIMARY KEY, username, first_name)')
     userbase.commit()
 
 
