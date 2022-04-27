@@ -37,7 +37,7 @@ async def start(message: types.Message):
             print(now, f'{message.from_user.first_name} вернулся!')
         else:
             await bot.send_message(message.from_user.id, 'Привет! Я буду следить за порядком в чате Три Версты \
-и предоставлять полезную информацию! Напиши мне в ЛС.\nДля управления ботом используй кнопки.', reply_markup=help_kb)
+и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb)
     except Exception as exc:
         await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@penis_mudilaBot', reply_markup=help_kb)
         await message.delete()
