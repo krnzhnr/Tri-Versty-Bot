@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
@@ -6,6 +8,7 @@ from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            KeyboardButton, ReplyKeyboardMarkup)
 from create_bot import bot, dp
 from data_base import sqlite_announcements_db, sqlite_users_db
+
 
 upload_button = KeyboardButton('/Загрузить')
 cancel_button = KeyboardButton('/Отмена')
@@ -26,7 +29,7 @@ class FSMAdmin(StatesGroup):
     photo = State()
     name = State()
     description = State()
-    price = State()
+    description2 = State()
 
 
 # @dp.message_handler(commands=['moderator'], is_chat_admin = True)
@@ -35,7 +38,9 @@ async def make_changes_command(message: types.Message):
     ID = message.from_user.id
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
     await message.delete()
-    print(message.from_user.first_name + ' запустил админку')
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
+    print(now, message.from_user.first_name + ' запустил админку')
 
 
 async def cancel_handler(message: types.Message, state: FSMContext):
@@ -46,7 +51,9 @@ async def cancel_handler(message: types.Message, state: FSMContext):
             return
         await state.finish()
         await message.reply('ОК')
-        print(message.from_user.first_name + ' отменил действие')
+        nowdatetime = datetime.datetime.now()
+        now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
+        print(now, message.from_user.first_name + ' отменил действие')
 
 
 ############################################################################# РАССЫЛКА #############################################################################################
@@ -54,10 +61,12 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(commands=['Рассылка'], state=None)
 async def setmail(message: types.Message):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     if message.from_user.id == ID:
         await FSMMailing.mail.set()
         await message.reply('Напиши мне то, что нужно разослать')
-        print(message.from_user.first_name + ' начал формирование рассылки')
+        print(now, message.from_user.first_name + ' начал формирование рассылки')
 
 
 # @dp.message_handler(state=FSMMailing.mail)
@@ -81,6 +90,9 @@ async def mail(message: types.Message, state=FSMContext):
                     failed += 1
             await message.answer('Успешно отправлено: ' + str(successful) + 
                                  '\nНе отправлено: ' + str(failed))
+            nowdatetime = datetime.datetime.now()
+            now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
+            print(now, f'{message.from_user.first_name} успешно разослал {successful} сообщений с текстом: {mail["mail_text"]}')
             await state.finish()
 
 
@@ -102,10 +114,12 @@ async def read_users(message: types.Message):
 
 # @dp.message_handler(commands='Загрузить', state=None)
 async def cm_start(message: types.Message):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     if message.from_user.id == ID:
         await FSMAdmin.photo.set()
         await message.reply('Загрузи фото')
-        print(message.from_user.first_name + ' начал добавление в ANNOUNCEMENTS-DB')
+        print(now, message.from_user.first_name + ' начал добавление в ANNOUNCEMENTS-DB')
 
 
 # @dp.message_handler(content_types=['photo'],state=FSMAdmin.photo)
@@ -135,14 +149,16 @@ async def load_description(message: types.Message, state: FSMContext):
         await message.reply('Теперь введи что-нибудь еще')
 
 
-# @dp.message_handler(state=FSMAdmin.price)
-async def load_price(message: types.Message, state: FSMContext):
+# @dp.message_handler(state=FSMAdmin.description2)
+async def load_description2(message: types.Message, state: FSMContext):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = message.text
         await sqlite_announcements_db.sql_add_command(state)
         await state.finish()
-        print(message.from_user.first_name + ' добавил объект в анонсы')
+        print(now, message.from_user.first_name + ' добавил объект в анонсы')
 
 
 ##################################################################### Запрос на удаление из базы данных ############################################################################
@@ -150,7 +166,10 @@ async def load_price(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(commands=['Удалить'])
 async def delete_item(message: types.Message):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     if message.from_user.id == ID:
+        print(now, message.from_user.first_name + ' запросил ANNOUNCEMENTS-DB для удаления')
         read = await sqlite_announcements_db.sql_read2()
         for ret in read:
             await bot.send_photo(message.from_user.id, 
@@ -160,7 +179,6 @@ async def delete_item(message: types.Message):
                                 \nОписание: {ret[-1]}')
             await bot.send_message(message.from_user.id, text='^^^', reply_markup=InlineKeyboardMarkup().\
                 add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'del {ret[1]}')))
-    print(message.from_user.first_name + ' запросил ANNOUNCEMENTS-DB для удаления')
 
 
 ######################################################################## Удаление из базы данных ###################################################################################
@@ -186,6 +204,6 @@ def register_handlers_admin(dp:Dispatcher):
     dp.register_message_handler(load_photo, content_types=['photo'], state=FSMAdmin.photo)
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_description, state=FSMAdmin.description)
-    dp.register_message_handler(load_price, state=FSMAdmin.price)
+    dp.register_message_handler(load_description2, state=FSMAdmin.description2)
     dp.register_message_handler(delete_item, commands=['Удалить'])
     dp.register_callback_query_handler(del_callback_run, lambda x: x.data and x.data.startswith('del '))

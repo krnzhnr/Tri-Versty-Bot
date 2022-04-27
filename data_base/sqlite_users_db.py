@@ -1,7 +1,7 @@
+import datetime
 import sqlite3 as sq
 
 from create_bot import bot, dp
-
 
 def sql_users_start():
     global userbase, usercur
@@ -14,23 +14,21 @@ def sql_users_start():
 
 
 async def sql_add_user(userdata):
-    id_check(userdata)
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     user_id = userdata['id']
-    if id_check(userdata) is True:
-        print('Adding user with id %s to users table' % user_id)
+    try:
         usercur.execute('INSERT INTO users VALUES (?,?,?)', tuple(userdata.values()))
         userbase.commit()
-    else:
-        print('User with id %s already exists' % user_id)
-
-
-def id_check(userdata):
-    user_id = userdata['id']
-    est = usercur.execute('SELECT id FROM users WHERE id = ?', (user_id,))
-    if est.fetchone() is None:
+        print(now, 'Adding user with id %s to users table' % user_id)
+    except sq.IntegrityError as exc:
+        print(now, exc)
+        print(now, 'User with id %s already exists' % user_id)
         return True
+    except Exception as exc:
+        print(now, 'ERROR:', exc)
     else:
-        return False
+        print(now, f"{userdata['first_name']}" ' добавлен в базу, ошибок не было: вы великолепны!')
 
 
 async def read_users():

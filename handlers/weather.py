@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -17,16 +19,20 @@ class FSMWeather(StatesGroup):
 
 # @dp.message_handler(commands=['Погода'], state=None)
 async def weather(message: types.Message, state:FSMContext):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         await FSMWeather.city.set()
         await message.reply('Город?')
     except Exception as exc:
-        print(exc)
+        print(now, exc)
         await state.finish()
 
 
 # @dp.message_handler(content_types=['text'], state=FSMWeather.city)
 async def city(message: types.Message, state:FSMContext):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     async with state.proxy() as data:
         data['city'] = message.text
     try:
@@ -79,12 +85,12 @@ async def city(message: types.Message, state:FSMContext):
         # await message.answer (w.heat_index)              # None
         # await message.answer (w.clouds)                  # 75
         await message.answer(str(a.upper()) + "\n\n" + c + "\n\n" + str(d))
-        print(message.from_user.first_name + ' запросил погоду в ' + data['city'])
+        print(now, message.from_user.first_name + ' запросил погоду в ' + data['city'])
     except:
         await message.reply(
             "Ты что мне тут вводишь?\nЧтобы узнать погоду нажми кнопку погоды и введи название города."
             )
-        print(message.from_user.first_name + ' попробовал запросить погоду в ' + data['city'] + ', но не смог')
+        print(now, message.from_user.first_name + ' попробовал запросить погоду в ' + data['city'] + ', но не смог')
         await state.finish()
         # answer = forecast.will_be_clear_at(timestamps.tomorrow())
     # await message.reply(data['city'])

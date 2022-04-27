@@ -1,3 +1,4 @@
+import datetime
 import sqlite3 as sq
 
 from create_bot import bot, dp
@@ -16,44 +17,52 @@ def sql_start():
 
 # Добавление в базу данных
 async def sql_add_command(state):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     async with state.proxy() as data:
         try:
             cur.execute('INSERT INTO database VALUES(?, ?, ?, ?)', tuple(data.values()))
             base.commit()
-            print('Успешная запись в базу ANNOUNCEMENTS-DB')
+            print(now, 'Успешная запись в базу ANNOUNCEMENTS-DB')
         except Exception as exc: 
-            print('ОШИБКА: Запись в базу ANNOUNCEMENTS-DB не произведена')
+            print(now, 'ОШИБКА: Запись в базу ANNOUNCEMENTS-DB не произведена')
             print(exc)
 
 
 # Чтение базы данных пользователем командой /Анонсы
 async def sql_read(message):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         for ret in cur.execute('SELECT * FROM database').fetchall():
             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n{ret[2]}\n{ret[-1]}')
-        print('Успешное чтение ANNOUNCEMENTS-DB пользователем')
+        print(now, 'Успешное чтение ANNOUNCEMENTS-DB пользователем')
     except Exception as exc:
         await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
-        print('ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено')
+        print(now, 'ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено')
         print(exc)
 
 
 # Чтение базы данных админом командой /Удалить
 async def sql_read2():
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
-        print('Успешное чтение ANNOUNCEMENTS-DB админом для удаления')
+        print(now, 'Успешное чтение ANNOUNCEMENTS-DB админом для удаления')
         return cur.execute('SELECT * FROM database').fetchall()
     except Exception as exc:
-        print('ОШИБКА: Чтение базы ANNOUNCEMENTS-DB админом для удаления не произведено')
+        print(now, 'ОШИБКА: Чтение базы ANNOUNCEMENTS-DB админом для удаления не произведено')
         print(exc)
 
 
 # Удаление из базы данных инлайн кнопкой "Удалить"
 async def sql_delete_command(data):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         cur.execute('DELETE FROM database WHERE name == ?', (data,))
         base.commit()
-        print('Успешное удаление из базы ANNOUNCEMENTS-DB')
+        print(now, 'Успешное удаление из базы ANNOUNCEMENTS-DB')
     except Exception as exc:
-        print('ОШИБКА: Удаление ' + data + ' из базы ANNOUNCEMENTS-DB не произведено')
+        print(now, 'ОШИБКА: Удаление ' + data + ' из базы ANNOUNCEMENTS-DB не произведено')
         print(exc)
