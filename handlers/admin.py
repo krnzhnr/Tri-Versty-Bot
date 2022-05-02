@@ -33,7 +33,7 @@ class FSMAdmin(StatesGroup):
 
 
 # @dp.message_handler(commands=['moderator'], is_chat_admin = True)
-async def make_changes_command(message: types.Message):
+async def get_admin(message: types.Message):
     global ID
     ID = message.from_user.id
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb)
@@ -135,7 +135,8 @@ async def load_photo(message: types.Message, state: FSMContext):
 async def load_name(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
-            data['name'] = message.text
+            if len(message.text) < 30:
+                data['name'] = message.text.upper()
         await FSMAdmin.next()
         await message.reply('Введи описание')
 
@@ -194,7 +195,7 @@ async def del_callback_run(callback_query: types.CallbackQuery):
 
 
 def register_handlers_admin(dp:Dispatcher):
-    dp.register_message_handler(make_changes_command, commands=['moderator'], is_chat_admin = True)
+    dp.register_message_handler(get_admin, commands=['admin'], is_chat_admin = True)
     dp.register_message_handler(cancel_handler, state="*", commands=['Отмена'])
     dp.register_message_handler(cancel_handler, Text(equals = 'Отмена', ignore_case = True), state = "*")
     dp.register_message_handler(setmail, commands=['Рассылка'], state=None)

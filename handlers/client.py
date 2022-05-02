@@ -36,10 +36,10 @@ async def start(message: types.Message):
             now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
             print(now, f'{message.from_user.first_name} вернулся!')
         else:
-            await bot.send_message(message.from_user.id, 'Привет! Я буду следить за порядком в чате Три Версты \
+            await bot.send_message(message.from_user.id, f"{message.from_user.first_name}"', привет! Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb)
     except Exception as exc:
-        await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@penis_mudilaBot', reply_markup=help_kb)
+        await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@triversty_bot', reply_markup=help_kb)
         await message.delete()
         print(now, exc)
 
@@ -53,7 +53,7 @@ async def announcements(message: types.Message):
         await sqlite_announcements_db.sql_read(message)
         await message.delete()
     except Exception as exc:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         await message.delete()
         print(now, exc)
 
@@ -66,18 +66,20 @@ async def help(message: types.Message):
         await bot.send_message(message.from_user.id, """
     Вот список моих команд:
 
-/Анонсы - бот отправляет вам в ЛС все актуальные на данный момент анонсы
+/Анонсы - получите в ЛС все актуальные на данный момент анонсы
 
 /ВК - Наша группа ВК со всеми фотографиями
 
-/Погода - Текущая погода и прогноз
+/Погода - Текущая погода в городе, который ты напишешь
 
 /Помощь - Помощь по командам
+
+⚠️ Организаторы могут использовать бота для осуществления информационных рассылок!
 """, reply_markup=help_kb)
         await message.delete()
         print(now, message.from_user.first_name + ' запросил помощь')
     except Exception as exc:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         await message.delete()
         print(now, exc)
 
@@ -93,7 +95,7 @@ https://vk.com/kubok_tri_versty
         await message.delete()
         print(now, message.from_user.first_name + ' запросил ВК')
     except Exception as exc:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         await message.delete()
         print(now, exc)
 

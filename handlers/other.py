@@ -5,7 +5,6 @@ import string
 from aiogram import Dispatcher, types
 
 
-# @dp.message_handler()
 async def message_filter(message:types.Message):
     if {i.lower().translate(str.maketrans('', '', string.punctuation)) for i in message.text.split(' ')}\
         .intersection(set(json.load(open('cenz.json')))) != set():

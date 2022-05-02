@@ -23,7 +23,7 @@ async def weather(message: types.Message, state:FSMContext):
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         await FSMWeather.city.set()
-        await message.reply('Город?')
+        await message.answer('Напиши мне название города, в котором ты хочешь узнать погоду.')
     except Exception as exc:
         print(now, exc)
         await state.finish()

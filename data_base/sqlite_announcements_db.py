@@ -35,10 +35,10 @@ async def sql_read(message):
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         for ret in cur.execute('SELECT * FROM database').fetchall():
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n{ret[2]}\n{ret[-1]}')
+            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n\n{ret[2]}\n\n{ret[-1]}')
         print(now, 'Успешное чтение ANNOUNCEMENTS-DB пользователем')
     except Exception as exc:
-        await message.answer('Общение с ботом через ЛС, напиши ему:\n@penis_mudilaBot')
+        await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         print(now, 'ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено')
         print(exc)
 
