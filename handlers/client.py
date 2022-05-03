@@ -190,4 +190,4 @@ def register_handlers_client(dp:Dispatcher):
     dp.register_message_handler(category, commands=['Категории'])
     dp.register_message_handler(user_joined, content_types=['new_chat_members'])
     dp.register_message_handler(user_left, content_types=['left_chat_member'])
-    
+

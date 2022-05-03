@@ -37,11 +37,3 @@ async def read_users():
 async def read_users_mailing_list():
     return usercur.execute('SELECT id, first_name FROM users').fetchall()
         
-
-    
-    
-    
-    
-    
-    
-    
