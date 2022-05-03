@@ -1,18 +1,19 @@
-# import asyncio
+import asyncio
 import datetime
 import sqlite3 as sq
-# from contextlib import suppress
+from contextlib import suppress
 
-# from aiogram import types
-# from aiogram.utils.exceptions import (MessageToEditNotFound, MessageCantBeEdited, MessageCantBeDeleted,
-#                                       MessageToDeleteNotFound)
+from aiogram import types
+from aiogram.utils.exceptions import (MessageToEditNotFound, MessageCantBeEdited, MessageCantBeDeleted,
+                                      MessageToDeleteNotFound)
+
 from create_bot import bot, dp
 
 
-# async def delete_message(message: types.Message, sleep_time: int = 0):
-#     await asyncio.sleep(sleep_time)
-#     with suppress(MessageCantBeDeleted, MessageToDeleteNotFound):
-#         await message.delete()
+async def delete_message(message: types.Message, sleep_time: int = 0):
+    await asyncio.sleep(sleep_time)
+    with suppress(MessageCantBeDeleted, MessageToDeleteNotFound):
+        await message.delete()
 
 
 # Подключение к базе данных
@@ -49,9 +50,9 @@ async def sql_read(message):
             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n\n{ret[2]}\n\n{ret[-1]}')
         print(now, 'Успешное чтение ANNOUNCEMENTS-DB пользователем')
     except Exception as exc:
-        # msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
-        # asyncio.create_task(delete_message(msg, 15))
-        # await message.delete()
+        msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
+        asyncio.create_task(delete_message(msg, 15))
+        await message.delete()
         print(now, 'ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено')
         print(exc, f'{message.from_user.first_name}')
 

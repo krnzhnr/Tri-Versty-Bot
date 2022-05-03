@@ -1,7 +1,6 @@
 import datetime
 import sqlite3 as sq
 
-from create_bot import bot, dp
 
 def sql_users_start():
     global userbase, usercur

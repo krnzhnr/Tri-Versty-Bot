@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 from contextlib import suppress
-
 from aiogram import Dispatcher, types
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.exceptions import (MessageCantBeDeleted,
@@ -9,17 +8,11 @@ from aiogram.utils.exceptions import (MessageCantBeDeleted,
 from create_bot import bot, dp
 from data_base import sqlite_announcements_db, sqlite_users_db
 
-# import handlers.weather as weather1
-# from handlers.weather import weather
-# from aiogram.dispatcher import FSMContext
-# from aiogram.dispatcher.filters.state import State, StatesGroup
-
 
 admin_button = KeyboardButton('/moderator')
 start_button = KeyboardButton('/start')
 
 category_button = KeyboardButton('/Категории')
-
 help_button = KeyboardButton('/Помощь')
 social_button = KeyboardButton('/Соцсети')
 weather_button = KeyboardButton('/Погода')
@@ -32,11 +25,11 @@ chat_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
     row(announcements_button, social_button).\
     row(help_button, category_button)
 
+# Удаление своих сообщений через промежуток времени
 async def delete_message(message: types.Message, sleep_time: int = 0):
     await asyncio.sleep(sleep_time)
     with suppress(MessageCantBeDeleted, MessageToDeleteNotFound):
         await message.delete()
-
 
 
 # @dp.message_handler(commands=['chat_start'])
@@ -51,7 +44,6 @@ async def start(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
-        # await message.delete()
         userdata = {}
         userdata = {'id':message.from_user.id, 
                     'username':message.from_user.username, 
@@ -83,17 +75,8 @@ async def announcements(message: types.Message):
         await sqlite_announcements_db.sql_read(message)
         await message.delete()
     except Exception as exc:
-        msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
-        asyncio.create_task(delete_message(msg, 15))
-        await message.delete()
         print(now, exc, f'{message.from_user.first_name}')
 
-# @dp.message_handler(commands=['weather'])
-# async def Weather(message: types.Message, state:FSMContext):
-#     nowdatetime = datetime.datetime.now()
-#     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
-#     await weather1.weather(message: types.Message, state:FSMContext)
-#     print(message.from_user.first_name, ' вызвал погоду')
 
 # @dp.message_handler(commands=['help'])
 async def help(message: types.Message):
@@ -120,6 +103,7 @@ async def help(message: types.Message):
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
         print(now, exc, f'{message.from_user.first_name}')
+
 
 # @dp.message_handler(commands=['social'])
 async def social_group(message: types.Message):
@@ -195,8 +179,6 @@ async def user_left(message: types.Message):
     except:
         print(now, message.from_user.first_name + ' не получил прощание в ЛС')
     print(now, message.from_user.first_name + ' покинул чат')
-
-
     
 
 def register_handlers_client(dp:Dispatcher):
@@ -205,7 +187,7 @@ def register_handlers_client(dp:Dispatcher):
     dp.register_message_handler(announcements, commands=['Анонсы'])
     dp.register_message_handler(help, commands=['Помощь'])
     dp.register_message_handler(social_group, commands=['Соцсети'])
-    # dp.register_message_handler(Weather, commands=['Погода'])
     dp.register_message_handler(category, commands=['Категории'])
     dp.register_message_handler(user_joined, content_types=['new_chat_members'])
     dp.register_message_handler(user_left, content_types=['left_chat_member'])
+    
