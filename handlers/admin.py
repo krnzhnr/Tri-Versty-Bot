@@ -101,12 +101,14 @@ async def mail(message: types.Message, state=FSMContext):
 
 # @dp.message_handler(commands=['users'])
 async def read_users(message: types.Message):
-    user_list = await sqlite_users_db.read_users()
-    count = 0
-    for user in user_list:
-        await message.answer(f'{user[0]}')
-        count += 1
-    await message.answer(f'{count} пользователя')
+    if message.from_user.id == ID:
+        user_list = await sqlite_users_db.read_users()
+        for user in user_list:
+            # await message.answer(user)
+            await message.answer(f'{user[0]}', f'{user[1]}', f'{user[2]}')
+            count += 1
+        await message.answer(f'{count} пользователя')
+        await message.answer(user_list)
 
 
 #################################################################### Добавление в ANNOUNCEMENTS-DB #################################################################################
