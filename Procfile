@@ -1,0 +1,1 @@
+worker: python tri_verstyBot.py
