@@ -1,1 +1,1 @@
-worker: python tri_verstyBot.py
+worker: python bot.py
