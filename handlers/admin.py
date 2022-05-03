@@ -104,8 +104,8 @@ async def read_users(message: types.Message):
     if message.from_user.id == ID:
         user_list = await sqlite_users_db.read_users()
         for user in user_list:
-            # await message.answer(user)
-            await message.answer(f'{user[0]}', f'{user[1]}', f'{user[2]}')
+            await message.answer(user)
+            # await message.answer(f'{user[0]}', f'{user[1]}', f'{user[2]}')
             count += 1
         await message.answer(f'{count} пользователя')
         await message.answer(user_list)
