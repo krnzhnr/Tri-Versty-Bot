@@ -31,7 +31,7 @@ async def sql_add_user(userdata):
 
 
 async def read_users():
-    return usercur.execute('SELECT * FROM users').fetchone()
+    return usercur.execute('SELECT * FROM users').fetchall()
 
 
 async def read_users_mailing_list():
