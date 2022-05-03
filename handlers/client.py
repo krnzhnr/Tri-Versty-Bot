@@ -25,6 +25,7 @@ chat_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
     row(announcements_button, social_button).\
     row(help_button, category_button)
 
+
 # Удаление своих сообщений через промежуток времени
 async def delete_message(message: types.Message, sleep_time: int = 0):
     await asyncio.sleep(sleep_time)
@@ -120,7 +121,7 @@ https://vk.com/kubok_tri_versty
 https://www.instagram.com/triversty_cup/
 """, reply_markup=(help_kb))
         await message.delete()
-        print(now, message.from_user.first_name + ' запросил ВК')
+        print(now, message.from_user.first_name + ' запросил соцсети')
     except Exception as exc:
         msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         asyncio.create_task(delete_message(msg, 15))

@@ -49,12 +49,12 @@ async def sql_read(message):
     try:
         for ret in cur.execute('SELECT * FROM database').fetchall():
             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n\n{ret[2]}\n\n{ret[-1]}')
-        print(now, 'Успешное чтение ANNOUNCEMENTS-DB пользователем')
+        print(now, 'Успешное чтение ANNOUNCEMENTS-DB пользователем 'f"{message.from_user.first_name}")
     except Exception as exc:
         msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
-        print(now, 'ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено')
+        print(now, 'ОШИБКА: Чтение из базы ANNOUNCEMENTS-DB не произведено, пользователь: 'f"{message.from_user.first_name}")
         print(exc, f'{message.from_user.first_name}')
 
 
