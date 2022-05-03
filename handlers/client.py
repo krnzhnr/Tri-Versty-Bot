@@ -65,7 +65,7 @@ async def start(message: types.Message):
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
         print(now, exc, f'{message.from_user.first_name}')
-
+    
 
 # @dp.message_handler(commands=['Анонсы'])
 async def announcements(message: types.Message):
@@ -77,7 +77,7 @@ async def announcements(message: types.Message):
         await message.delete()
     except Exception as exc:
         print(now, exc, f'{message.from_user.first_name}')
-
+    
 
 # @dp.message_handler(commands=['help'])
 async def help(message: types.Message):
@@ -103,6 +103,7 @@ async def help(message: types.Message):
         msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
+        print(now, message.from_user.first_name + ' не смог запросить помощь')
         print(now, exc, f'{message.from_user.first_name}')
 
 
@@ -126,6 +127,7 @@ https://www.instagram.com/triversty_cup/
         msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
+        print(now, message.from_user.first_name + ' не смог запросить соцсети')
         print(now, exc, f'{message.from_user.first_name}')
 
 
@@ -157,6 +159,7 @@ async def category(message: types.Message):
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
         print(now, exc, f'{message.from_user.first_name}')
+        print(now, message.from_user.first_name + ' не смог запросить категории')
 
 
 # @dp.message_handler(content_types=['new_chat_members'])
