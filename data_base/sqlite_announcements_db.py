@@ -9,6 +9,7 @@ from aiogram.utils.exceptions import (MessageCantBeDeleted,
                                       MessageToDeleteNotFound,
                                       MessageToEditNotFound)
 from create_bot import bot, dp
+from handlers.client import help_kb
 
 
 async def delete_message(message: types.Message, sleep_time: int = 0):
@@ -48,7 +49,7 @@ async def sql_read(message):
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         for ret in cur.execute('SELECT * FROM database').fetchall():
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n\n{ret[2]}\n\n{ret[-1]}')
+            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\n\n{ret[2]}\n\n{ret[-1]}', reply_markup = help_kb)
         print(now, 'Успешное чтение ANNOUNCEMENTS-DB пользователем 'f"{message.from_user.first_name}")
     except Exception as exc:
         msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')

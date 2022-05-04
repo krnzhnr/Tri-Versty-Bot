@@ -38,8 +38,11 @@ async def delete_message(message: types.Message, sleep_time: int = 0):
 
 # Команда /chat_start
 async def chat_start(message: types.Message):
-    await message.answer('Привет всем! Я буду следить за порядком в чате Три Версты \
-и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=chat_kb)
+    await message.answer("""
+Привет всем! Я буду следить за порядком в чате Три Версты \
+и предоставлять полезную информацию!
+Чтобы начать работу, напишите мне в личку.
+После запуска диалога со мной вы также сможете использовать кнопки в чате.""", reply_markup=chat_kb)
     await message.delete()
     
 
@@ -61,10 +64,14 @@ async def start(message: types.Message):
             now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
             print(now, f'{message.from_user.first_name} вернулся!')
         else:
-            await bot.send_message(message.from_user.id, f"{message.from_user.first_name}"', привет! Я буду следить за порядком в чате Три Версты \
-и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=help_kb)
+            await bot.send_message(message.from_user.id, 
+                                   f"{message.from_user.first_name}"
+                                   ', привет! Я буду следить за порядком в чате Три Версты \
+и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', 
+                                    reply_markup=help_kb)
     except Exception as exc:
-        msg = await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@triversty_bot', reply_markup=help_kb)
+        msg = await message.answer('Чтобы использовать бота напиши ему в ЛС:\n@triversty_bot', 
+                                   reply_markup=help_kb)
         asyncio.create_task(delete_message(msg, 15))
         await message.delete()
         print(now, exc, f'{message.from_user.first_name}')
@@ -79,7 +86,7 @@ async def registration_link(message:types.Message):
 Для предварительной регистрации на гонку заполните форму:
 
 https://forms.gle/5TaqUKdgFPwoSWSo6
-""")
+""", reply_markup = help_kb)
         await message.delete()
         print(now, message.from_user.first_name + ' запросил регистрацию')
     except Exception as exc:
@@ -109,6 +116,8 @@ async def help(message: types.Message):
     try:
         await bot.send_message(message.from_user.id, """
     Вот список моих команд:
+
+/Регистрация - получите ссылку для предварительной регистрации на предстоящую гонку
 
 /Анонсы - получите в ЛС все актуальные на данный момент анонсы
 
@@ -143,7 +152,7 @@ https://vk.com/kubok_tri_versty
 
 Наш инстаграмм с фоточками и видосами:
 https://www.instagram.com/triversty_cup/
-""", reply_markup=(help_kb))
+""", reply_markup=help_kb)
         await message.delete()
         print(now, message.from_user.first_name + ' запросил соцсети')
     except Exception as exc:
@@ -179,7 +188,7 @@ async def category(message: types.Message):
 Юниорки 15-18 лет (2004-2007 год рождения)
 Спорт 19-29 лет (1993-2003 год рождения)
 Фитнес 30-39 лет (1983-1992 год рождения)
-Суперфит 40+ лет (1982 год рождения и старше)""")
+Суперфит 40+ лет (1982 год рождения и старше)""", reply_markup = help_kb)
         await message.delete()
         print(now, message.from_user.first_name + ' запросил категории')
     except Exception as exc:
@@ -194,10 +203,12 @@ async def category(message: types.Message):
 async def user_joined(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
-    await message.answer('Добро пожаловать в чат!\n\
-Я буду следить за порядком в чате Три Версты \
-и предоставлять полезную информацию!\n\
-Чтобы увидеть список моих команд нажми кнопку /Помощь', reply_markup=chat_kb)
+    await message.answer("""
+Добро пожаловать в чат!
+Я буду следить за порядком в чате Три Версты\
+и предоставлять полезную информацию!
+Чтобы начать работу, напиши мне в личку.
+После запуска диалога со мной ты сможешь использовать кнопки в чате.""", reply_markup=chat_kb)
     print(now, message.from_user.first_name + ' вошел в чат')
 
 
