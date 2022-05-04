@@ -12,16 +12,19 @@ from data_base import sqlite_announcements_db, sqlite_users_db
 admin_button = KeyboardButton('/moderator')
 start_button = KeyboardButton('/start')
 
+registration_button = KeyboardButton('/Регистрация')
 category_button = KeyboardButton('/Категории')
 help_button = KeyboardButton('/Помощь')
 social_button = KeyboardButton('/Соцсети')
 weather_button = KeyboardButton('/Погода')
 announcements_button = KeyboardButton('/Анонсы')
 help_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
+    row(registration_button).\
     row(announcements_button, weather_button).\
     row(social_button, category_button).\
     row(help_button)
 chat_kb = ReplyKeyboardMarkup(resize_keyboard=True).\
+    row(registration_button).\
     row(announcements_button, social_button).\
     row(help_button, category_button)
 
@@ -33,14 +36,14 @@ async def delete_message(message: types.Message, sleep_time: int = 0):
         await message.delete()
 
 
-# @dp.message_handler(commands=['chat_start'])
+# Команда /chat_start
 async def chat_start(message: types.Message):
     await message.answer('Привет всем! Я буду следить за порядком в чате Три Версты \
 и предоставлять полезную информацию!\nДля управления ботом используй кнопки.', reply_markup=chat_kb)
     await message.delete()
     
 
-# @dp.message_handler(commands=['start'])
+# Команда /start
 async def start(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
@@ -67,19 +70,39 @@ async def start(message: types.Message):
         print(now, exc, f'{message.from_user.first_name}')
     
 
-# @dp.message_handler(commands=['Анонсы'])
+# Команда /Регистрация
+async def registration_link(message:types.Message):
+    nowdatetime = datetime.datetime.now()
+    now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
+    try:
+        await bot.send_message(message.from_user.id, """
+Для предварительной регистрации на гонку заполните форму:
+
+https://forms.gle/5TaqUKdgFPwoSWSo6
+""")
+        await message.delete()
+        print(now, message.from_user.first_name + ' запросил регистрацию')
+    except Exception as exc:
+        msg = await message.answer('Общение с ботом через ЛС, напиши ему:\n@triversty_bot')
+        asyncio.create_task(delete_message(msg, 15))
+        await message.delete()
+        print(now, message.from_user.first_name + ' не смог запросить регистрацию')
+        print(now, exc, f'{message.from_user.first_name}')
+ 
+
+# Команда /Анонсы
 async def announcements(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
-        print(now, message.from_user.first_name + ' запросил анонсы')
         await sqlite_announcements_db.sql_read(message)
+        print(now, message.from_user.first_name + ' запросил анонсы')
         await message.delete()
     except Exception as exc:
         print(now, exc, f'{message.from_user.first_name}')
     
 
-# @dp.message_handler(commands=['help'])
+# Команда /Помощь
 async def help(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
@@ -107,7 +130,7 @@ async def help(message: types.Message):
         print(now, exc, f'{message.from_user.first_name}')
 
 
-# @dp.message_handler(commands=['social'])
+# Команда /Соцсети
 async def social_group(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
@@ -131,6 +154,7 @@ https://www.instagram.com/triversty_cup/
         print(now, exc, f'{message.from_user.first_name}')
 
 
+# Команда /Категории
 async def category(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
@@ -192,6 +216,7 @@ async def user_left(message: types.Message):
 def register_handlers_client(dp:Dispatcher):
     dp.register_message_handler(chat_start, commands=['chat_start'])
     dp.register_message_handler(start, commands=['start'])
+    dp.register_message_handler(registration_link, commands=['Регистрация'])
     dp.register_message_handler(announcements, commands=['Анонсы'])
     dp.register_message_handler(help, commands=['Помощь'])
     dp.register_message_handler(social_group, commands=['Соцсети'])
