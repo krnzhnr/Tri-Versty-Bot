@@ -3,7 +3,7 @@ import logging
 from aiogram.utils import executor
 
 from create_bot import dp
-from data_base import sqlite_announcements_db, sqlite_users_db, mysql_db
+from data_base import sqlite_announcements_db, sqlite_users_db#, mysql_db
 from data_base import mysql_db
 from handlers import admin, client, other, weather
 
