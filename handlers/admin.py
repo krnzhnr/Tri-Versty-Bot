@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            KeyboardButton, ReplyKeyboardMarkup)
 from create_bot import bot, dp
-from data_base import sqlite_announcements_db, sqlite_users_db, mysql_db
+from data_base import sqlite_announcements_db, sqlite_users_db#, mysql_db
 
 
 upload_button = KeyboardButton('/Загрузить')
