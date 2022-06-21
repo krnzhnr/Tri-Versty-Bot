@@ -58,7 +58,7 @@ async def start(message: types.Message):
             'first_name':message.from_user.first_name
             }
         print(userdata)
-        if await mysql_db.mysql_add_user(userdata) is True:
+        if await sqlite_users_db.sql_add_user(userdata) is True:
             await bot.send_message(message.from_user.id, 
                                    'Привет, 'f" {userdata['first_name']}, "' я тебя помню!', 
                                    reply_markup=help_kb)
@@ -104,7 +104,7 @@ async def announcements(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
-        await mysql_db.mysql_read_announcements(message)
+        await sqlite_announcements_db.sql_read(message)
         print(now, message.from_user.first_name + ' запросил анонсы')
         await message.delete()
     except Exception as exc:

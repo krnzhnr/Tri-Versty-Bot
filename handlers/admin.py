@@ -74,7 +74,7 @@ async def mail(message: types.Message, state=FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as mail:
             mail['mail_text'] = message.text
-            users = await mysql_db.mysql_read_mailing()
+            users = await sqlite_users_db.read_users_mailing_list()
             successful = 0
             failed = 0
             for user in users:
@@ -139,6 +139,9 @@ async def load_name(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             if len(message.text) < 30:
                 data['name'] = message.text.upper()
+            else:
+                await message.reply('Так не пойдет, нужно название покороче, давай заново)')
+                await state.finish()
         await FSMAdmin.next()
         await message.reply('Введи описание')
 
@@ -159,7 +162,7 @@ async def load_description2(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = message.text
-        await mysql_db.mysql_add_announce(state)
+        await sqlite_announcements_db.sql_add_command(state)
         await state.finish()
         print(now, message.from_user.first_name + ' добавил объект в анонсы')
 
