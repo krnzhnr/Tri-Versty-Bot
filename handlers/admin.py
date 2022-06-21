@@ -102,7 +102,7 @@ async def mail(message: types.Message, state=FSMContext):
 # @dp.message_handler(commands=['users'])
 async def read_users(message: types.Message):
     # if message.from_user.id == ID:
-    user_list = await mysql_db.mysql_read_users()
+    user_list = await sqlite_users_db.read_users()
     count = 0
     for user in user_list:
         await message.answer(user)
