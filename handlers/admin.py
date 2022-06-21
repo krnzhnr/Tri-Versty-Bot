@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            KeyboardButton, ReplyKeyboardMarkup)
 from create_bot import bot, dp
-from data_base import sqlite_announcements_db, sqlite_users_db
+from data_base import sqlite_announcements_db, sqlite_users_db, mysql_db
 
 
 upload_button = KeyboardButton('/Загрузить')
@@ -74,7 +74,7 @@ async def mail(message: types.Message, state=FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as mail:
             mail['mail_text'] = message.text
-            users = await sqlite_users_db.read_users_mailing_list()
+            users = await mysql_db.mysql_read_mailing()
             successful = 0
             failed = 0
             for user in users:
@@ -101,14 +101,14 @@ async def mail(message: types.Message, state=FSMContext):
 
 # @dp.message_handler(commands=['users'])
 async def read_users(message: types.Message):
-    if message.from_user.id == ID:
-        user_list = await sqlite_users_db.read_users()
-        count = 0
-        for user in user_list:
-            await message.answer(user)
-            # await message.answer(f'{user[0]}', f'{user[1]}', f'{user[2]}')
-            count += 1
-        await message.answer(f'{count} пользователя')
+    # if message.from_user.id == ID:
+    user_list = await mysql_db.mysql_read_users()
+    count = 0
+    for user in user_list:
+        await message.answer(user)
+        # await message.answer(f'{user[0]}', f'{user[1]}', f'{user[2]}')
+        count += 1
+    await message.answer('{} пользователей'.format(count))
 
 
 #################################################################### Добавление в ANNOUNCEMENTS-DB #################################################################################
@@ -159,7 +159,7 @@ async def load_description2(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = message.text
-        await sqlite_announcements_db.sql_add_command(state)
+        await mysql_db.mysql_add_announce(state)
         await state.finish()
         print(now, message.from_user.first_name + ' добавил объект в анонсы')
 

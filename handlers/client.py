@@ -7,7 +7,7 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.exceptions import (MessageCantBeDeleted,
                                       MessageToDeleteNotFound)
 from create_bot import bot, dp
-from data_base import sqlite_announcements_db, sqlite_users_db
+from data_base import sqlite_announcements_db, sqlite_users_db, mysql_db
 
 admin_button = KeyboardButton('/moderator')
 start_button = KeyboardButton('/start')
@@ -52,11 +52,13 @@ async def start(message: types.Message):
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
         userdata = {}
-        userdata = {'id':message.from_user.id, 
-                    'username':message.from_user.username, 
-                    'first_name':message.from_user.first_name}
+        userdata = {
+            'id':message.from_user.id, 
+            'username':message.from_user.username, 
+            'first_name':message.from_user.first_name
+            }
         print(userdata)
-        if await sqlite_users_db.sql_add_user(userdata) is True:
+        if await mysql_db.mysql_add_user(userdata) is True:
             await bot.send_message(message.from_user.id, 
                                    'Привет, 'f" {userdata['first_name']}, "' я тебя помню!', 
                                    reply_markup=help_kb)
@@ -102,7 +104,7 @@ async def announcements(message: types.Message):
     nowdatetime = datetime.datetime.now()
     now = nowdatetime.strftime('[%d/%m/%Y %H:%M:%S]')
     try:
-        await sqlite_announcements_db.sql_read(message)
+        await mysql_db.mysql_read_announcements(message)
         print(now, message.from_user.first_name + ' запросил анонсы')
         await message.delete()
     except Exception as exc:
